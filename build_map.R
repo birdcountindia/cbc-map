@@ -106,7 +106,7 @@ map_shell <- leaflet(options = leafletOptions(
                 \"<div class='cbc-title'>\" + p.campus + \" (\" + p.city + \")</div>\" +
                 \"<div class='cbc-info-line'><b>Participation:</b> \" + p.is_public + \"</div>\" +
                 \"<div class='cbc-info-line'><b>Walks on:</b> \" + p.date_display + \"</div>\" +
-                \"<div class='cbc-info-line'><b>Contact:</b> \" + p.lead_name + \" (\" + p.phone + \")</div>\" +
+                \"<div class='cbc-info-line'><b>Contact:</b> \" + p.lead_name + \" + p.phone + \"</div>\" +
                 \"<div class='cbc-info-line'><a href='https://ebird.org/hotspot/\" + p.hotspot_id + \"' target='_blank'>eBird Hotspot</a></div>\"
               );
             }
