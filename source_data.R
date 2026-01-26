@@ -24,6 +24,11 @@ data <- data %>%
     date = paste(unique(date), collapse = ", "),
     across(c(state, city, campus, is_public, time, lead_name, email, phone, campus_type, link), first),
     .groups = "drop"
+  ) |> 
+  mutate(
+    lead_name = if_else(is_public == "No", "Not ", lead_name),
+    phone = if_else(is_public == "No", "Available", as.character(phone)),
+    is_public = if_else(is_public == "No", "Closed to Public", "Open to Public")
   )
   
 get_loc <- function(loc_id, connection) {
