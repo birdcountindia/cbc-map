@@ -1,0 +1,65 @@
+/* Base Card Styling */
+.cbc-hover-card {
+    font-family: 'Helvetica', sans-serif;
+    min-width: 260px;
+    max-width: 310px;
+    background-color: white;
+    border: 2px solid dimgray;
+    border-radius: 25px;
+    padding: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    white-space: normal;
+}
+
+/* Remove default Leaflet popup bubble styling */
+.leaflet-popup-content-wrapper {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.leaflet-popup-tip-container {
+    display: none !important; /* Removes the triangle tip */
+}
+
+/* 5-digit number accommodation */
+.cbc-stat-item {
+    text-align: center;
+    flex: 1;
+}
+
+.cbc-title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 900;
+    text-transform: capitalize;
+    margin-bottom: 8px;
+    word-wrap: break-word;
+}
+
+/* Ensure the map fills the entire screen on mobile */
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#map {
+    width: 100%;
+    height: 100vh !important;
+}
+
+/* Make popups and prompts more touch-friendly */
+.cbc-hover-card {
+    min-width: 200px; /* Smaller min-width for narrow screens */
+    max-width: 280px;
+    font-size: 14px; /* Slightly smaller text for mobile */
+}
+
+#location-prompt {
+    width: 90%; /* Wider on mobile for better visibility */
+    padding: 15px;
+    font-size: 14px;
+}
