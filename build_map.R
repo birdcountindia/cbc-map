@@ -151,7 +151,7 @@ map_shell <- leaflet(options = leafletOptions(
             var isMobile = window.innerWidth < 600;
             map.fitBounds(bounds, {
               padding: isMobile ? [30, 30] : [50, 50], 
-              maxZoom: isMobile ? 16 : 14 
+              maxZoom: isMobile ? 14 : 12 
             });
             L.circleMarker(e.latlng, {radius: 8, fillColor: '#ff0000', color: '#fff', weight: 2}).addTo(map);
           });

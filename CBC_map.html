@@ -4069,44 +4069,26 @@ function asArray(value) {
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <style>
-body, html, #htmlwidget_container, .leaflet { width: 100%; height: 100%; margin: 2; padding: 1; overflow: hidden; }
+body, html, #htmlwidget_container, .leaflet { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
 .close-x {
-position: absolute;
-top: 4px;
-right: 8px;
-font-size: 20px;
-color: #999;
-cursor: pointer;
-font-weight: normal;
-line-height: 1; 
+position: absolute; top: 4px; right: 8px;
+font-size: 20px; color: #999; cursor: pointer;
+font-weight: normal; line-height: 1;
 }
-.close-x:hover {
-color: #000;
-} .cbc-title { font-weight: 900; text-align: center; text-transform: capitalize; margin-bottom: 3px; font-size: 20px; color: #2c3e50;
-display: block;
+.close-x:hover { color: #000; } .cbc-title { font-weight: 900; text-align: center; text-transform: capitalize; margin-bottom: 3px; font-size: 20px; color: #2c3e50; display: block;
 }
 .cbc-info-line { margin-bottom: 8px; font-size: 14px; text-align: center; }
 .cbc-info-line a {
-display: inline-block;
-padding: 10px 20px;
-background-color: #f8f9fa;
-border: 1px solid #007bff;
-border-radius: 8px;
-text-decoration: none;
-color: #007bff;
-font-weight: bold;
-margin-top: 3px;
+display: inline-block; padding: 10px 20px; background-color: #f8f9fa;
+border: 1px solid #007bff; border-radius: 8px; text-decoration: none;
+color: #007bff; font-weight: bold; margin-top: 3px;
 }
-
 #location-prompt {
 position: absolute; bottom: 15%; left: 50%;
 transform: translateX(-50%); z-index: 1000;
-background: white; padding: 6px 8px; border-radius: 10px;
-border: 1px solid #000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-size: 12px;
-font-family: Helvetica, sans-serif; font-weight: bold; text-align: center;
-width: 80%; max-width: 350px;
+background: white; padding: 10px 15px; border-radius: 10px;
+border: 1px solid #000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-size: 12px; font-family: Helvetica, sans-serif; font-weight: bold; text-align: center; width: 80%; max-width: 350px;
 }
-
 @media only screen and (max-width: 768px) {
 .cbc-title { font-size: 18px; }
 .cbc-info-line { font-size: 12px; }
@@ -4116,13 +4098,13 @@ width: 80%; max-width: 350px;
 </head>
 <body style="background-color: white;">
 <div id="htmlwidget_container">
-  <div class="leaflet html-widget html-fill-item" id="htmlwidget-6da7a0d770bd5fac1d7c" style="width:100%;height:400px;"></div>
+  <div class="leaflet html-widget html-fill-item" id="htmlwidget-caa0a25d6fd44b83dc87" style="width:100%;height:400px;"></div>
   <div id="location-prompt">
     <span class="close-x">×</span>
     Granting location permission will allow you to view registered campuses nearby.
   </div>
 </div>
-<script type="application/json" data-for="htmlwidget-6da7a0d770bd5fac1d7c">{"x":{"options":{"minZoom":4,"maxZoom":18,"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}},"worldCopyJump":false,"zoomControl":false,"dragging":true,"tap":true,"touchZoom":true},"setView":[[22.5937,78.9629],5,[]],"calls":[{"method":"addTiles","args":["https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false}]}]},"evals":[],"jsHooks":{"render":[{"code":"function(el, x, data) {\n  return (\n  function(el, x) {\n    var map = this;\n    var prompt = document.getElementById('location-prompt');\n    \n    // Close box handler: only hides the UI, doesn't stop map.locate\n    if (prompt) {\n        prompt.querySelector('.close-x').onclick = function() {\n            prompt.style.display = 'none';\n        };\n    }\n      var dataUrl = 'https://raw.githubusercontent.com/birdcountindia/cbc-map/main/campuses.json';\n\n      fetch(dataUrl)\n        .then(response => response.json())\n        .then(data => {\n          var campusLayer = L.geoJson(data, {\n            pointToLayer: function (feature, latlng) {\n              var isMobile = window.innerWidth < 600;\n              var iconSize = isMobile ? [45, 45] : [35, 35];\n              \n              return L.marker(latlng, { \n                icon: L.icon({ \n                  iconUrl: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+DQo8c3ZnIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBoZWlnaHQ9IjI0IiB3aWR0aD0iMjQiIHZlcnNpb249IjEuMSIgeG1sbnM6Y2M9Imh0dHA6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL25zIyIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIj4NCiA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIC0xMDI4LjQpIj4NCiAgPHBhdGggZD0ibTEyIDBjLTQuNDE4MyAyLjM2ODVlLTE1IC04IDMuNTgxNy04IDggMCAxLjQyMSAwLjM4MTYgMi43NSAxLjAzMTIgMy45MDYgMC4xMDc5IDAuMTkyIDAuMjIxIDAuMzgxIDAuMzQzOCAwLjU2M2w2LjYyNSAxMS41MzEgNi42MjUtMTEuNTMxYzAuMTAyLTAuMTUxIDAuMTktMC4zMTEgMC4yODEtMC40NjlsMC4wNjMtMC4wOTRjMC42NDktMS4xNTYgMS4wMzEtMi40ODUgMS4wMzEtMy45MDYgMC00LjQxODMtMy41ODItOC04LTh6bTAgNGMyLjIwOSAwIDQgMS43OTA5IDQgNCAwIDIuMjA5LTEuNzkxIDQtNCA0LTIuMjA5MSAwLTQtMS43OTEtNC00IDAtMi4yMDkxIDEuNzkwOS00IDQtNHoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgMTAyOC40KSIgZmlsbD0iI2U3NGMzYyIvPg0KICA8cGF0aCBkPSJtMTIgM2MtMi43NjE0IDAtNSAyLjIzODYtNSA1IDAgMi43NjEgMi4yMzg2IDUgNSA1IDIuNzYxIDAgNS0yLjIzOSA1LTUgMC0yLjc2MTQtMi4yMzktNS01LTV6bTAgMmMxLjY1NyAwIDMgMS4zNDMxIDMgM3MtMS4zNDMgMy0zIDMtMy0xLjM0MzEtMy0zIDEuMzQzLTMgMy0zeiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAxMDI4LjQpIiBmaWxsPSIjYzAzOTJiIi8+DQogPC9nPg0KPC9zdmc+', \n                  iconSize: iconSize,\n                  iconAnchor: [iconSize[0]/2, iconSize[1]]\n                }),\n                group: 'Campuses' \n              });\n            },\n            onEachFeature: function (feature, layer) {\n              var p = feature.properties;\n              layer.bindPopup(\n                \"<div class='cbc-title'>\" + p.campus + \" (\" + p.city + \")<\/div>\" +\n                \"<div class='cbc-info-line'><b>Participation:<\/b> \" + p.is_public + \"<\/div>\" +\n                \"<div class='cbc-info-line'><b>Walks on:<\/b> \" + p.date_display + \"<\/div>\" +\n                \"<div class='cbc-info-line'><b>Contact:<\/b> \" + p.lead_name + \" \" + p.phone + \"<\/div>\" +\n                \"<div class='cbc-info-line'><a href='https://ebird.org/hotspot/\" + p.hotspot_id + \"' target='_blank'>eBird Hotspot<\/a><\/div>\"\n              );\n            }\n          }).addTo(map);\n\n          map.locate({setView: false, enableHighAccuracy: true, timeout: 10000});\n          map.on('locationfound', function(e) {\n            if (prompt) prompt.style.display = 'none';\n            var allMarkers = [];\n            map.eachLayer(function(l) { \n              if (l instanceof L.Marker && l.options.group === 'Campuses') allMarkers.push(l); \n            });\n            var dists = allMarkers.map(m => ({ m: m, d: e.latlng.distanceTo(m.getLatLng()) }));\n            dists.sort((a, b) => a.d - b.d);\n            \n            var bounds = L.latLngBounds().extend(e.latlng);\n            for (var i = 0; i < Math.min(3, dists.length); i++) bounds.extend(dists[i].m.getLatLng());\n            \n            var isMobile = window.innerWidth < 600;\n            map.fitBounds(bounds, {\n              padding: isMobile ? [30, 30] : [50, 50], \n              maxZoom: isMobile ? 14 : 12 \n            });\n            L.circleMarker(e.latlng, {radius: 8, fillColor: '#ff0000', color: '#fff', weight: 2}).addTo(map);\n          });\n        });\n    }\n  ).call(this.getMap(), el, x, data);\n}","data":null}]}}</script>
-<script type="application/htmlwidget-sizing" data-for="htmlwidget-6da7a0d770bd5fac1d7c">{"viewer":{"width":"100%","height":400,"padding":0,"fill":true},"browser":{"width":"100%","height":400,"padding":0,"fill":true}}</script>
+<script type="application/json" data-for="htmlwidget-caa0a25d6fd44b83dc87">{"x":{"options":{"minZoom":4,"maxZoom":18,"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}},"worldCopyJump":false,"zoomControl":false,"dragging":true,"tap":true,"touchZoom":true},"setView":[[22.5937,78.9629],5,[]],"calls":[{"method":"addTiles","args":["https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false}]}]},"evals":[],"jsHooks":{"render":[{"code":"function(el, x, data) {\n  return (\n  function(el, x) {\n    var map = this;\n    var prompt = document.getElementById('location-prompt');\n    \n    // 1. UI Handler for the 'x' button\n    if (prompt) {\n        prompt.querySelector('.close-x').onclick = function() {\n            prompt.style.display = 'none';\n        };\n    }\n\n    // 2. Add Draggable Red Square (100km x 100km)\n    // 1 degree is ~111km, so 100km is ~0.9 degrees\n    var size = 4.5; \n    var center = map.getCenter();\n    var squareBounds = [\n      [center.lat - size/2, center.lng - size/2],\n      [center.lat + size/2, center.lng + size/2]\n    ];\n\n    var redSquare = L.rectangle(squareBounds, {\n      color: 'red', weight: 2, fillOpacity: 0.1, interactive: true\n    }).addTo(map);\n\n    // Manual Drag Logic for the Square\n    var isDragging = false;\n    var lastPos;\n\n    redSquare.on('mousedown', function(e) {\n      isDragging = true;\n      lastPos = e.latlng;\n      map.dragging.disable(); // Stop map panning while dragging square\n      L.DomEvent.stopPropagation(e);\n    });\n\n    map.on('mousemove', function(e) {\n      if (!isDragging) return;\n      var deltaLat = e.latlng.lat - lastPos.lat;\n      var deltaLng = e.latlng.lng - lastPos.lng;\n      var b = redSquare.getBounds();\n      \n      redSquare.setBounds([\n        [b.getSouth() + deltaLat, b.getWest() + deltaLng],\n        [b.getNorth() + deltaLat, b.getEast() + deltaLng]\n      ]);\n      lastPos = e.latlng;\n    });\n\n    map.on('mouseup', function() {\n      isDragging = false;\n      map.dragging.enable();\n    });\n\n    // 3. Load Campus Data\n    var dataUrl = 'https://raw.githubusercontent.com/birdcountindia/cbc-map/main/campuses.json';\n    fetch(dataUrl)\n      .then(response => response.json())\n      .then(data => {\n        L.geoJson(data, {\n          pointToLayer: function (feature, latlng) {\n            var isMobile = window.innerWidth < 600;\n            var iconSize = isMobile ? [45, 45] : [35, 35];\n            return L.marker(latlng, { \n              icon: L.icon({ \n                iconUrl: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+DQo8c3ZnIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBoZWlnaHQ9IjI0IiB3aWR0aD0iMjQiIHZlcnNpb249IjEuMSIgeG1sbnM6Y2M9Imh0dHA6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL25zIyIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIj4NCiA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIC0xMDI4LjQpIj4NCiAgPHBhdGggZD0ibTEyIDBjLTQuNDE4MyAyLjM2ODVlLTE1IC04IDMuNTgxNy04IDggMCAxLjQyMSAwLjM4MTYgMi43NSAxLjAzMTIgMy45MDYgMC4xMDc5IDAuMTkyIDAuMjIxIDAuMzgxIDAuMzQzOCAwLjU2M2w2LjYyNSAxMS41MzEgNi42MjUtMTEuNTMxYzAuMTAyLTAuMTUxIDAuMTktMC4zMTEgMC4yODEtMC40NjlsMC4wNjMtMC4wOTRjMC42NDktMS4xNTYgMS4wMzEtMi40ODUgMS4wMzEtMy45MDYgMC00LjQxODMtMy41ODItOC04LTh6bTAgNGMyLjIwOSAwIDQgMS43OTA5IDQgNCAwIDIuMjA5LTEuNzkxIDQtNCA0LTIuMjA5MSAwLTQtMS43OTEtNC00IDAtMi4yMDkxIDEuNzkwOS00IDQtNHoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAgMTAyOC40KSIgZmlsbD0iI2U3NGMzYyIvPg0KICA8cGF0aCBkPSJtMTIgM2MtMi43NjE0IDAtNSAyLjIzODYtNSA1IDAgMi43NjEgMi4yMzg2IDUgNSA1IDIuNzYxIDAgNS0yLjIzOSA1LTUgMC0yLjc2MTQtMi4yMzktNS01LTV6bTAgMmMxLjY1NyAwIDMgMS4zNDMxIDMgM3MtMS4zNDMgMy0zIDMtMy0xLjM0MzEtMy0zIDEuMzQzLTMgMy0zeiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCAxMDI4LjQpIiBmaWxsPSIjYzAzOTJiIi8+DQogPC9nPg0KPC9zdmc+', \n                iconSize: iconSize,\n                iconAnchor: [iconSize[0]/2, iconSize[1]]\n              }),\n              group: 'Campuses' \n            });\n          },\n          onEachFeature: function (feature, layer) {\n            var p = feature.properties;\n            layer.bindPopup(\n              \"<div class='cbc-title'>\" + p.campus + \" (\" + p.city + \")<\/div>\" +\n              \"<div class='cbc-info-line'><b>Participation:<\/b> \" + p.is_public + \"<\/div>\" +\n              \"<div class='cbc-info-line'><b>Walks on:<\/b> \" + p.date_display + \"<\/div>\" +\n              \"<div class='cbc-info-line'><b>Contact:<\/b> \" + p.lead_name + \" \" + (p.phone || '') + \"<\/div>\" +\n              \"<div class='cbc-info-line'><a href='https://ebird.org/hotspot/\" + p.hotspot_id + \"' target='_blank'>eBird Hotspot<\/a><\/div>\"\n            );\n          }\n        }).addTo(map);\n\n        // 4. Trigger Auto-Location\n        map.locate({setView: false, enableHighAccuracy: true, timeout: 10000});\n        map.on('locationfound', function(e) {\n          if (prompt) prompt.style.display = 'none';\n          var allMarkers = [];\n          map.eachLayer(function(l) { \n            if (l instanceof L.Marker && l.options.group === 'Campuses') allMarkers.push(l); \n          });\n          var dists = allMarkers.map(m => ({ m: m, d: e.latlng.distanceTo(m.getLatLng()) }));\n          dists.sort((a, b) => a.d - b.d);\n          \n          var bounds = L.latLngBounds().extend(e.latlng);\n          for (var i = 0; i < Math.min(3, dists.length); i++) bounds.extend(dists[i].m.getLatLng());\n          \n          var isMobile = window.innerWidth < 600;\n          map.fitBounds(bounds, {\n            padding: isMobile ? [30, 30] : [50, 50], \n            maxZoom: isMobile ? 14 : 12 \n          });\n          L.circleMarker(e.latlng, {radius: 8, fillColor: '#ff0000', color: '#fff', weight: 2}).addTo(map);\n        });\n      });\n  }\n  ).call(this.getMap(), el, x, data);\n}","data":null}]}}</script>
+<script type="application/htmlwidget-sizing" data-for="htmlwidget-caa0a25d6fd44b83dc87">{"viewer":{"width":"100%","height":400,"padding":0,"fill":true},"browser":{"width":"100%","height":400,"padding":0,"fill":true}}</script>
 </body>
 </html>
