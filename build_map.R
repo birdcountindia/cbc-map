@@ -29,6 +29,21 @@ map_shell <- leaflet(options = leafletOptions(
       body, html, #htmlwidget_container, .leaflet { 
         width: 100%; height: 100%; margin: 2; padding: 1; overflow: hidden; 
       }
+      
+      .close-x {
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    font-size: 20px;
+    color: #999;
+    cursor: pointer;
+    font-weight: normal;
+    line-height: 1; /* Ensures it stays aligned at the top */
+}
+
+.close-x:hover {
+    color: #000;
+}     
 
       .cbc-title { 
         font-weight: 900; 
@@ -75,12 +90,20 @@ map_shell <- leaflet(options = leafletOptions(
     "))
   )) %>%
   appendContent(tags$div(id = "location-prompt", 
+                         tags$span(class="close-x", "×"),
                          "Granting location permission will allow you to view registered campuses nearby.")) %>%
   
   onRender(paste0("
-    function(el, x) {
-      var map = this;
-      var prompt = document.getElementById('location-prompt');
+  function(el, x) {
+    var map = this;
+    var prompt = document.getElementById('location-prompt');
+    
+    // Close box handler: only hides the UI, doesn't stop map.locate
+    if (prompt) {
+        prompt.querySelector('.close-x').onclick = function() {
+            prompt.style.display = 'none';
+        };
+    }
       var dataUrl = 'https://raw.githubusercontent.com/birdcountindia/cbc-map/main/campuses.json';
 
       fetch(dataUrl)
@@ -123,7 +146,7 @@ map_shell <- leaflet(options = leafletOptions(
             dists.sort((a, b) => a.d - b.d);
             
             var bounds = L.latLngBounds().extend(e.latlng);
-            for (var i = 0; i < Math.min(5, dists.length); i++) bounds.extend(dists[i].m.getLatLng());
+            for (var i = 0; i < Math.min(3, dists.length); i++) bounds.extend(dists[i].m.getLatLng());
             
             var isMobile = window.innerWidth < 600;
             map.fitBounds(bounds, {
