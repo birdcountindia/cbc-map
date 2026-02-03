@@ -79,7 +79,11 @@ get_loc <- function(loc_id) {
     })) %>%
     mutate(date_display = as.character(date))
   
-  # Write the output
+  # Write the outputs
+  
+  update_time <- Sys.time()
+  writeLines(as.character(update_time), "last_update.txt")
+  
   sf_geojson(data) %>% 
     write("campuses.json")
   
