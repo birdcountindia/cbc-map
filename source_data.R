@@ -4,18 +4,17 @@ library(glue)
 library(sf)
 library(DBI)
 library(geojsonsf)
+library(rebird)
+library(httr)
+library(jsonlite)
 
 update_map_data <- function() {
-# --- 1. Load Data ---
-source("../postgresql/private.R")
-gs4_auth(email = "alenalex@ncf-india.org") # Ensure this is active for automation
 
-# Pull fresh data
-data_new <- read_sheet("https://docs.google.com/spreadsheets/d/1xNm-JheLupRkwpOTLcpit0RiTu6cmX-Y4We7S8vZAWk/", 
+data<- read_sheet("https://docs.google.com/spreadsheets/d/1xNm-JheLupRkwpOTLcpit0RiTu6cmX-Y4We7S8vZAWk/", 
                        sheet = 1, col_names = TRUE)
 
 # Process fresh data
-data_processed <- data_new %>%
+data <- data %>%
  setNames(c("state", "city", "campus", "is_public", "date", "time", "lead_name", "email", "phone", "campus_type", "link")) %>%
   filter(!is.na(link)) |> 
   mutate(hotspot_id = str_extract(link, "L\\d+"),
@@ -38,66 +37,42 @@ data_processed <- data_new %>%
   ungroup() |> 
   filter(!is.na(hotspot_id))
 
-# --- 2. Comparison Check ---
-if (file.exists("data/data_old.RData")) {
-  load("data/data_old.RData") # This loads the 'data_old' object
-} else {
-  data_old <- NULL
-}
+load("data/data_old.RData") 
 
-if (!is.null(data_old) && identical(data_processed, data_old)) {
-  
+if (identical(data, data_old)) {
   message("--- No changes detected. Skipping update. ---")
   return(FALSE)
 } else {
-  
   message("--- Changes detected! Proceeding with update... ---")
   
-  # Update the saved reference
-  data_old <- data_processed
-  save(data_old, file = "data/data_old.RData")
-  return(TRUE)
-  }
-} 
- # --- 3. Core Processing (Geocoding & GeoJSON) ---
-  get_loc<- function(loc_id, connection) {
-    if (is.na(loc_id) || loc_id == "") {
-      return(tibble(latitude = NA, longitude = NA))
-    }
-    
-    # REMOVED hotspot_id from the SELECT statement to prevent naming conflicts
-    query <- glue("
-    SELECT \"LATITUDE\" AS latitude, 
-           \"LONGITUDE\" AS longitude
-    FROM \"LOCATION\" 
-    WHERE \"LOCALITY.ID\" = '{loc_id}'
-    LIMIT 1;
-  ")
-    
-    res <- try({
-      res_set <- dbSendQuery(connection, query)
-      out <- dbFetch(res_set)
-      dbClearResult(res_set)
-      out
-    }, silent = TRUE)
-    
-    # If query fails or returns no rows, return NAs
-    if (inherits(res, "try-error") || nrow(res) == 0) {
-      return(tibble(latitude = NA, longitude = NA))
-    }
-    
-    return(as_tibble(res))
+source("data/private.R")
+get_loc <- function(loc_id) {
+  if (is.na(loc_id) || loc_id == "") return(tibble(latitude = NA, longitude = NA))
+  url <- paste0("https://api.ebird.org/v2/ref/hotspot/info/", loc_id)
+  res <- try(httr::GET(url, httr::add_headers("X-eBirdApiToken" = api_key)), silent = TRUE)
+  if (!inherits(res, "try-error") && httr::status_code(res) == 200) {
+    payload <- jsonlite::fromJSON(httr::content(res, "text", encoding = "UTF-8"))
+    return(tibble(
+      latitude = as.numeric(payload$latitude),
+      longitude = as.numeric(payload$longitude)
+    ))
   }
   
-  stats_df <- map_dfr(data_processed$hotspot_id, ~get_loc(.x, con))
-  
-  final_data <- data_processed %>%
+  return(tibble(latitude = NA, longitude = NA))
+}
+ 
+ stats_df <- map_dfr(data$hotspot_id, ~ {
+  loc_data <- get_loc(.x)
+  Sys.sleep(0.2) 
+  return(loc_data)
+})
+
+  data <- data %>%
     bind_cols(stats_df) %>%
+    filter(!is.na(longitude)) |> 
     mutate(across(c(longitude, latitude), as.numeric)) %>%
     filter(!is.na(latitude) & !is.na(longitude)) %>%
-    st_as_sf(coords = c("longitude", "latitude"), crs = 4326)
-  
-  final_data <- final_data %>%
+    st_as_sf(coords = c("longitude", "latitude"), crs = 4326)%>%
     mutate(across(where(is.character), ~ {
       clean_text <- str_replace_all(., "[^[:ascii:]]", " ") 
       str_squish(clean_text)
@@ -105,7 +80,14 @@ if (!is.null(data_old) && identical(data_processed, data_old)) {
     mutate(date_display = as.character(date))
   
   # Write the output
-  sf_geojson(final_data) %>% 
+  sf_geojson(data) %>% 
     write("campuses.json")
   
+  data_old <- data
+  save(data_old, file = "data/data_old.RData")
+  
   message("--- Map data successfully updated. ---")
+  return(TRUE)
+}
+}   
+  
