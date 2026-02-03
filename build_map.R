@@ -24,7 +24,7 @@ map_shell <- leaflet(options = leafletOptions(
   addTiles(urlTemplate = "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}") %>%
  
 
-# CSS ---------------------------------------------------------------------
+# CSS --------
   prependContent(tags$head(
     tags$meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"),
     tags$style(HTML("
@@ -176,7 +176,7 @@ map_shell <- leaflet(options = leafletOptions(
         document.getElementById('update-timer').innerHTML = 'Status: Live';
       });
       
-   // --- Universal Drag Logic (PC & Mobile) ---
+// --- Two-Finger Mobile / Standard PC Logic ---
     var size = 0.9; 
     var center = map.getCenter();
     var squareBounds = [[center.lat - size/2, center.lng - size/2], [center.lat + size/2, center.lng + size/2]];
@@ -188,31 +188,42 @@ map_shell <- leaflet(options = leafletOptions(
     var isDragging = false;
     var lastPos;
 
-    // Helper to get LatLng from any event type
     function getEvtLatLng(e) {
-      // If it's a native touch event
-      if (e.touches && e.touches.length > 0) {
-        return map.mouseEventToLatLng(e.touches[0]);
+      // For two-finger drag, we track the midpoint between the two fingers
+      if (e.touches && e.touches.length >= 2) {
+        var lat = (e.touches[0].pageY + e.touches[1].pageY) / 2;
+        var lng = (e.touches[0].pageX + e.touches[1].pageX) / 2;
+        return map.containerPointToLatLng([lng, lat]);
       }
-      // If it's a native mouse event
+      // For PC (Standard Mouse)
       return map.mouseEventToLatLng(e);
     }
 
     function onStart(e) {
-      isDragging = true;
-      // Use the helper to capture starting position
-      lastPos = getEvtLatLng(e.originalEvent || e);
+      var nativeEvt = e.originalEvent || e;
       
-      map.dragging.disable();
-      if (map.touchZoom) map.touchZoom.disable();
-      
-      L.DomEvent.stopPropagation(e);
+      // PC: Trigger on mousedown
+      // Mobile: Trigger ONLY if 2 fingers are touching
+      if (nativeEvt.type === 'mousedown' || (nativeEvt.touches && nativeEvt.touches.length >= 2)) {
+        isDragging = true;
+        lastPos = getEvtLatLng(nativeEvt);
+        
+        map.dragging.disable();
+        if (map.touchZoom) map.touchZoom.disable();
+        
+        L.DomEvent.stopPropagation(e);
+      }
     }
 
     function onMove(e) {
       if (!isDragging) return;
       
+      // Stop screen scrolling
+      if (e.cancelable) e.preventDefault();
+
       var currentLatLng = getEvtLatLng(e);
+      if (!currentLatLng || !lastPos) return;
+
       var deltaLat = currentLatLng.lat - lastPos.lat;
       var deltaLng = currentLatLng.lng - lastPos.lng;
       
@@ -223,9 +234,6 @@ map_shell <- leaflet(options = leafletOptions(
       ]);
       
       lastPos = currentLatLng;
-      
-      // Prevent browser from scrolling or zooming while dragging
-      if (e.cancelable) e.preventDefault();
     }
 
     function onEnd() {
@@ -235,10 +243,10 @@ map_shell <- leaflet(options = leafletOptions(
       if (map.touchZoom) map.touchZoom.enable();
     }
 
-    // A. Start dragging on the square itself
+    // A. Start dragging on the square
     redSquare.on('mousedown touchstart', onStart);
 
-    // B. Track movement and release on the window (Universal)
+    // B. Track movement globally
     window.addEventListener('mousemove', onMove, {passive: false});
     window.addEventListener('touchmove', onMove, {passive: false});
     window.addEventListener('mouseup', onEnd);
