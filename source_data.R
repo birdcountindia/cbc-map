@@ -43,6 +43,8 @@ if (identical(data, data_old)) {
   message("--- No changes detected. Skipping update. ---")
   return(FALSE)
 } else {
+  data_old <- data
+  save(data_old, file = "data/data_old.RData")
   message("--- Changes detected! Proceeding with update... ---")
 
 source("data/private.R")
@@ -79,9 +81,6 @@ get_loc <- function(loc_id) {
   
   sf_geojson(data) %>% 
   write("campuses.json")
-  
-  data_old <- data
-  save(data_old, file = "data/data_old.RData")
   
   message("--- Map data successfully updated. ---")
   return(TRUE)
