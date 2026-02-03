@@ -176,82 +176,58 @@ map_shell <- leaflet(options = leafletOptions(
         document.getElementById('update-timer').innerHTML = 'Status: Live';
       });
       
-// --- Two-Finger Mobile / Standard PC Logic ---
-    var size = 0.9; 
-    var center = map.getCenter();
-    var squareBounds = [[center.lat - size/2, center.lng - size/2], [center.lat + size/2, center.lng + size/2]];
+// --- Fail-Safe Responsive Square Logic ---
+    var isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (window.innerWidth <= 768);
+    var redSquare = null; // Initialize as null
 
-    var redSquare = L.rectangle(squareBounds, {
-      color: 'red', weight: 2, fillOpacity: 0.1, interactive: true
-    }).addTo(map);
+    if (!isMobile) {
+        // ONLY execute this on Desktop
+        var size = 0.9; 
+        var center = map.getCenter();
+        var squareBounds = [
+          [center.lat - size/2, center.lng - size/2],
+          [center.lat + size/2, center.lng + size/2]
+        ];
 
-    var isDragging = false;
-    var lastPos;
+        // Create the square only for desktop users
+        redSquare = L.rectangle(squareBounds, {
+          color: 'red', weight: 2, fillOpacity: 0.1, interactive: true
+        }).addTo(map);
 
-    function getEvtLatLng(e) {
-      // For two-finger drag, we track the midpoint between the two fingers
-      if (e.touches && e.touches.length >= 2) {
-        var lat = (e.touches[0].pageY + e.touches[1].pageY) / 2;
-        var lng = (e.touches[0].pageX + e.touches[1].pageX) / 2;
-        return map.containerPointToLatLng([lng, lat]);
-      }
-      // For PC (Standard Mouse)
-      return map.mouseEventToLatLng(e);
+        var isDragging = false;
+        var lastPos;
+
+        function onStart(e) {
+          isDragging = true;
+          lastPos = map.mouseEventToLatLng(e.originalEvent || e);
+          map.dragging.disable();
+          L.DomEvent.stopPropagation(e);
+        }
+
+        function onMove(e) {
+          if (!isDragging || !redSquare) return;
+          var currentLatLng = map.mouseEventToLatLng(e);
+          var deltaLat = currentLatLng.lat - lastPos.lat;
+          var deltaLng = currentLatLng.lng - lastPos.lng;
+          var b = redSquare.getBounds();
+          
+          redSquare.setBounds([
+            [b.getSouth() + deltaLat, b.getWest() + deltaLng],
+            [b.getNorth() + deltaLat, b.getEast() + deltaLng]
+          ]);
+          lastPos = currentLatLng;
+        }
+
+        function onEnd() {
+          if (!isDragging) return;
+          isDragging = false;
+          map.dragging.enable();
+        }
+
+        redSquare.on('mousedown', onStart);
+        window.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onEnd);
     }
-
-    function onStart(e) {
-      var nativeEvt = e.originalEvent || e;
-      
-      // PC: Trigger on mousedown
-      // Mobile: Trigger ONLY if 2 fingers are touching
-      if (nativeEvt.type === 'mousedown' || (nativeEvt.touches && nativeEvt.touches.length >= 2)) {
-        isDragging = true;
-        lastPos = getEvtLatLng(nativeEvt);
-        
-        map.dragging.disable();
-        if (map.touchZoom) map.touchZoom.disable();
-        
-        L.DomEvent.stopPropagation(e);
-      }
-    }
-
-    function onMove(e) {
-      if (!isDragging) return;
-      
-      // Stop screen scrolling
-      if (e.cancelable) e.preventDefault();
-
-      var currentLatLng = getEvtLatLng(e);
-      if (!currentLatLng || !lastPos) return;
-
-      var deltaLat = currentLatLng.lat - lastPos.lat;
-      var deltaLng = currentLatLng.lng - lastPos.lng;
-      
-      var b = redSquare.getBounds();
-      redSquare.setBounds([
-        [b.getSouth() + deltaLat, b.getWest() + deltaLng],
-        [b.getNorth() + deltaLat, b.getEast() + deltaLng]
-      ]);
-      
-      lastPos = currentLatLng;
-    }
-
-    function onEnd() {
-      if (!isDragging) return;
-      isDragging = false;
-      map.dragging.enable();
-      if (map.touchZoom) map.touchZoom.enable();
-    }
-
-    // A. Start dragging on the square
-    redSquare.on('mousedown touchstart', onStart);
-
-    // B. Track movement globally
-    window.addEventListener('mousemove', onMove, {passive: false});
-    window.addEventListener('touchmove', onMove, {passive: false});
-    window.addEventListener('mouseup', onEnd);
-    window.addEventListener('touchend', onEnd);
-
     // Load Data
     var dataUrl = 'https://raw.githubusercontent.com/birdcountindia/cbc-map/main/campuses.json';
     fetch(dataUrl)
