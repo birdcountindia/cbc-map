@@ -156,7 +156,12 @@ map_shell <- leaflet(options = leafletOptions(
           const diffHrs = Math.floor(diffMs / 3600000);
           const diffMins = Math.floor((diffMs % 3600000) / 60000);
           
-          timerElement.innerHTML = \"Its been \" + diffHrs + \" hours and \" + diffMins + \" minutes since this map has been updated.\";
+          // MODIFIED: Check if hours > 0 before deciding what to display
+          if (diffHrs > 0) {
+             timerElement.innerHTML = \"Its been \" + diffHrs + \" hours and \" + diffMins + \" minutes since this map has been updated.\";
+          } else {
+             timerElement.innerHTML = \"Its been \" + diffMins + \" minutes since this map has been updated.\";
+          }
           
           // Visual warning if the automation has stalled (older than 2 hours)
           if (diffHrs >= 2) { 
