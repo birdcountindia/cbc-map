@@ -158,9 +158,9 @@ map_shell <- leaflet(options = leafletOptions(
           
           // MODIFIED: Check if hours > 0 before deciding what to display
           if (diffHrs > 0) {
-             timerElement.innerHTML = \"Its been \" + diffHrs + \" hours and \" + diffMins + \" minutes since this map has been updated.\";
+             timerElement.innerHTML = \"This map was last updated \" + diffHrs + \" hours and \" + diffMins + \" minutes ago.\";
           } else {
-             timerElement.innerHTML = \"Its been \" + diffMins + \" minutes since this map has been updated.\";
+             timerElement.innerHTML = \"This map was last updated \" + diffMins + \" minutes ago.\";
           }
           
           // Visual warning if the automation has stalled (older than 2 hours)
