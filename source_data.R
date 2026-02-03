@@ -42,6 +42,7 @@ load("data/data_old.RData")
 if (identical(data, data_old)) {
   message("--- No changes detected. Skipping update. ---")
   return(FALSE)
+  
 } else {
   message("--- Changes detected! Proceeding with update... ---")
   
