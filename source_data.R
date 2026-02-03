@@ -32,7 +32,9 @@ data_processed <- data_new %>%
     lead_name = if_else(is_public == "No", "Not ", lead_name),
     phone = if_else(is_public == "No", "Available", as.character(phone)),
     is_public = if_else(is_public == "No", "Closed to Public", "Open to Public")
-  )
+  ) |> 
+  ungroup() |> 
+  filter(!is.na(hotspot_id))
 
 # --- 2. Comparison Check ---
 if (file.exists("data/data_old.RData")) {
@@ -54,15 +56,32 @@ if (!is.null(data_old) && identical(data_processed, data_old)) {
   save(data_old, file = "data/data_old.RData")
   
   # --- 3. Core Processing (Geocoding & GeoJSON) ---
-  get_loc <- function(loc_id, connection) {
-    query <- glue("SELECT \"LOCALITY.ID\", 
-                          MAX(\"LATITUDE\") AS latitude, 
-                          MAX(\"LONGITUDE\") AS longitude
-                   FROM ebd 
-                   WHERE \"LOCALITY.ID\" = '{loc_id}'
-                   GROUP BY \"LOCALITY.ID\";")
-    res <- dbGetQuery(connection, query)
-    if(nrow(res) == 0) return(tibble(latitude = NA, longitude = NA))
+  get_loc_safe <- function(loc_id, connection) {
+    if (is.na(loc_id) || loc_id == "") {
+      return(tibble(hotspot_id = loc_id, latitude = NA, longitude = NA))
+    }
+    
+    # Querying from the LOCATION table instead of the massive ebd table
+    # Note: Ensure the column names in your LOCATION table match these.
+    query <- glue("
+    SELECT \"LOCALITY_ID\" AS hotspot_id, 
+           \"LATITUDE\" AS latitude, 
+           \"LONGITUDE\" AS longitude
+    FROM \"LOCATION\" 
+    WHERE \"LOCALITY_ID\" = '{loc_id}';
+  ")
+    
+    res <- try({
+      res_set <- dbSendQuery(connection, query)
+      out <- dbFetch(res_set)
+      dbClearResult(res_set)
+      out
+    }, silent = TRUE)
+    
+    if (inherits(res, "try-error") || nrow(res) == 0) {
+      return(tibble(hotspot_id = loc_id, latitude = NA, longitude = NA))
+    }
+    
     return(as_tibble(res))
   }
   
