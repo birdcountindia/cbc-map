@@ -183,15 +183,13 @@ map_shell <- leaflet(options = leafletOptions(
       
 // --- Fail-Safe Responsive Square Logic ---
     var isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (window.innerWidth <= 768);
-    var redSquare = null; // Initialize as null
-
+    var redSquare = null; 
     if (!isMobile) {
-        
         var sizeUrl = 'https://raw.githubusercontent.com/birdcountindia/cbc-map/main/square_size.txt';
         fetch(sizeUrl)
             .then(response => response.text())
             .then(sizeStr => {
-                var size = parseFloat(sizeStr.trim()) 
+                var size = parseFloat(sizeStr.trim());
         var center = map.getCenter();
         var squareBounds = [
           [center.lat - size/2, center.lng - size/2],
@@ -236,6 +234,7 @@ map_shell <- leaflet(options = leafletOptions(
         redSquare.on('mousedown', onStart);
         window.addEventListener('mousemove', onMove);
         window.addEventListener('mouseup', onEnd);
+    })
     }
     // Load Data
     var dataUrl = 'https://raw.githubusercontent.com/birdcountindia/cbc-map/main/campuses.json';

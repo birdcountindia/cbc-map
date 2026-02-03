@@ -46,6 +46,6 @@ repeat {
 
 
 # Square size -------------------------------------------------------------
-sq_size <- "4.5"
-writeLines(as.character(sq_size), "square_size.txt")
+# sq_size <- "4.5"
+# writeLines(as.character(sq_size), "square_size.txt")
 
