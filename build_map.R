@@ -186,8 +186,12 @@ map_shell <- leaflet(options = leafletOptions(
     var redSquare = null; // Initialize as null
 
     if (!isMobile) {
-        // ONLY execute this on Desktop
-        var size = 2.25; 
+        
+        var sizeUrl = 'https://raw.githubusercontent.com/birdcountindia/cbc-map/main/square_size.txt';
+        fetch(sizeUrl)
+            .then(response => response.text())
+            .then(sizeStr => {
+                var size = parseFloat(sizeStr.trim()) 
         var center = map.getCenter();
         var squareBounds = [
           [center.lat - size/2, center.lng - size/2],
