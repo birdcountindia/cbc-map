@@ -5,6 +5,7 @@ library(sf)
 library(DBI)
 library(geojsonsf)
 
+update_map_data <- function() {
 # --- 1. Load Data ---
 source("../postgresql/private.R")
 gs4_auth(email = "alenalex@ncf-india.org") # Ensure this is active for automation
@@ -16,6 +17,7 @@ data_new <- read_sheet("https://docs.google.com/spreadsheets/d/1xNm-JheLupRkwpOT
 # Process fresh data
 data_processed <- data_new %>%
  setNames(c("state", "city", "campus", "is_public", "date", "time", "lead_name", "email", "phone", "campus_type", "link")) %>%
+  filter(!is.na(link)) |> 
   mutate(hotspot_id = str_extract(link, "L\\d+"),
          time = format(as.POSIXct(time), "%I:%M %p")) %>% 
   group_by(hotspot_id) %>%
@@ -46,7 +48,7 @@ if (file.exists("data/data_old.RData")) {
 if (!is.null(data_old) && identical(data_processed, data_old)) {
   
   message("--- No changes detected. Skipping update. ---")
-  
+  return(FALSE)
 } else {
   
   message("--- Changes detected! Proceeding with update... ---")
@@ -54,21 +56,22 @@ if (!is.null(data_old) && identical(data_processed, data_old)) {
   # Update the saved reference
   data_old <- data_processed
   save(data_old, file = "data/data_old.RData")
-  
-  # --- 3. Core Processing (Geocoding & GeoJSON) ---
-  get_loc_safe <- function(loc_id, connection) {
+  return(TRUE)
+  }
+} 
+ # --- 3. Core Processing (Geocoding & GeoJSON) ---
+  get_loc<- function(loc_id, connection) {
     if (is.na(loc_id) || loc_id == "") {
-      return(tibble(hotspot_id = loc_id, latitude = NA, longitude = NA))
+      return(tibble(latitude = NA, longitude = NA))
     }
     
-    # Querying from the LOCATION table instead of the massive ebd table
-    # Note: Ensure the column names in your LOCATION table match these.
+    # REMOVED hotspot_id from the SELECT statement to prevent naming conflicts
     query <- glue("
-    SELECT \"LOCALITY_ID\" AS hotspot_id, 
-           \"LATITUDE\" AS latitude, 
+    SELECT \"LATITUDE\" AS latitude, 
            \"LONGITUDE\" AS longitude
     FROM \"LOCATION\" 
-    WHERE \"LOCALITY_ID\" = '{loc_id}';
+    WHERE \"LOCALITY.ID\" = '{loc_id}'
+    LIMIT 1;
   ")
     
     res <- try({
@@ -78,8 +81,9 @@ if (!is.null(data_old) && identical(data_processed, data_old)) {
       out
     }, silent = TRUE)
     
+    # If query fails or returns no rows, return NAs
     if (inherits(res, "try-error") || nrow(res) == 0) {
-      return(tibble(hotspot_id = loc_id, latitude = NA, longitude = NA))
+      return(tibble(latitude = NA, longitude = NA))
     }
     
     return(as_tibble(res))
@@ -105,4 +109,3 @@ if (!is.null(data_old) && identical(data_processed, data_old)) {
     write("campuses.json")
   
   message("--- Map data successfully updated. ---")
-}
