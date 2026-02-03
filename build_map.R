@@ -182,7 +182,7 @@ map_shell <- leaflet(options = leafletOptions(
 
     if (!isMobile) {
         // ONLY execute this on Desktop
-        var size = 0.9; 
+        var size = 2.25; 
         var center = map.getCenter();
         var squareBounds = [
           [center.lat - size/2, center.lng - size/2],
@@ -236,7 +236,7 @@ map_shell <- leaflet(options = leafletOptions(
         L.geoJson(data, {
           pointToLayer: function (feature, latlng) {
             var isMobile = window.innerWidth < 600;
-            var iconSize = isMobile ? [45, 45] : [35, 35];
+            var iconSize = isMobile ? [35, 35] : [25, 25];
             return L.marker(latlng, { 
               icon: L.icon({ 
                 iconUrl: '", marker_uri, "', 

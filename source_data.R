@@ -42,10 +42,9 @@ load("data/data_old.RData")
 if (identical(data, data_old)) {
   message("--- No changes detected. Skipping update. ---")
   return(FALSE)
-  
 } else {
   message("--- Changes detected! Proceeding with update... ---")
-  
+
 source("data/private.R")
 get_loc <- function(loc_id) {
   if (is.na(loc_id) || loc_id == "") return(tibble(latitude = NA, longitude = NA))
@@ -58,7 +57,6 @@ get_loc <- function(loc_id) {
       longitude = as.numeric(payload$longitude)
     ))
   }
-  
   return(tibble(latitude = NA, longitude = NA))
 }
  
@@ -72,7 +70,6 @@ get_loc <- function(loc_id) {
     bind_cols(stats_df) %>%
     filter(!is.na(longitude)) |> 
     mutate(across(c(longitude, latitude), as.numeric)) %>%
-    filter(!is.na(latitude) & !is.na(longitude)) %>%
     st_as_sf(coords = c("longitude", "latitude"), crs = 4326)%>%
     mutate(across(where(is.character), ~ {
       clean_text <- str_replace_all(., "[^[:ascii:]]", " ") 
@@ -80,13 +77,8 @@ get_loc <- function(loc_id) {
     })) %>%
     mutate(date_display = as.character(date))
   
-  # Write the outputs
-  
-  update_time <- Sys.time()
-  writeLines(as.character(update_time), "last_update.txt")
-  
   sf_geojson(data) %>% 
-    write("campuses.json")
+  write("campuses.json")
   
   data_old <- data
   save(data_old, file = "data/data_old.RData")
@@ -94,5 +86,4 @@ get_loc <- function(loc_id) {
   message("--- Map data successfully updated. ---")
   return(TRUE)
 }
-}   
-  
+}

@@ -15,6 +15,10 @@ run_sync_cycle <- function() {
     
     # 2. ONLY proceed to Git if changes_made is TRUE
     if (changes_made) {
+      
+      update_time <- Sys.time()
+      writeLines(as.character(update_time), "last_update.txt")
+      
       system('git config user.email "skimmer@birdcount.in"')
       system('git config user.name "Bird Count India"')
       
