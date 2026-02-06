@@ -13,6 +13,9 @@ update_map_data <- function() {
 data<- read_sheet("https://docs.google.com/spreadsheets/d/1xNm-JheLupRkwpOTLcpit0RiTu6cmX-Y4We7S8vZAWk/", 
                        sheet = 1, col_names = TRUE)
 
+no_of_events <- NROW(data)
+writeLines(as.character(no_of_events), "no_of_events.txt")
+
 # Process fresh data
 data <- data %>%
  setNames(c("state", "city", "campus", "is_public", "date", "time", "lead_name", "email", "phone", "campus_type", "link")) %>%
@@ -36,6 +39,9 @@ data <- data %>%
   ) |> 
   ungroup() |> 
   filter(!is.na(hotspot_id))
+
+no_of_campuses <- NROW(data)
+writeLines(as.character(no_of_campuses), "no_of_campuses.txt")
 
 load("data/data_old.RData") 
 
