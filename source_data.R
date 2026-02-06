@@ -43,6 +43,10 @@ data <- data %>%
 no_of_campuses <- NROW(data)
 writeLines(as.character(no_of_campuses), "no_of_campuses.txt")
 
+no_of_states <- unique(data$state) 
+no_of_states <-  n_distinct(no_of_states)
+writeLines(as.character(no_of_states), "no_of_states.txt")
+
 load("data/data_old.RData") 
 
 if (identical(data, data_old)) {
