@@ -14,17 +14,16 @@ marker_uri <- encode_svg("www/icons/Map_marker.svg")
 map_shell <- leaflet(options = leafletOptions(
   minZoom = 4,
   maxZoom = 18,
-  zoomControl = FALSE, 
+  zoomControl = FALSE,  # Disabled default (added manually in JS)
   dragging = TRUE,
-  tap = TRUE,          
+  tap = TRUE,           
   touchZoom = TRUE,
   worldCopyJump = FALSE
 )) %>%
   setView(lng = 78.9629, lat = 22.5937, zoom = 5) %>%  
   addTiles(urlTemplate = "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}") %>%
- 
-
-# CSS --------
+  
+  # --- CSS STYLES ---
   prependContent(tags$head(
     tags$meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"),
     tags$style(HTML("
@@ -37,7 +36,7 @@ map_shell <- leaflet(options = leafletOptions(
           font-size: 20px; color: #999; cursor: pointer;
           font-weight: normal; line-height: 1;
       }
-      .close-x:hover { color: #000; }     
+      .close-x:hover { color: #000; }      
 
       .cbc-title { 
         font-weight: 900; text-align: center; text-transform: capitalize; 
@@ -58,62 +57,95 @@ map_shell <- leaflet(options = leafletOptions(
         font-size: 12px; font-family: Helvetica, sans-serif; font-weight: bold; 
         text-align: center; width: 80%; max-width: 350px;
       }
-    
+      
       #update-timer {
-  position: absolute; 
-  bottom: 12px;          /* same baseline as logo */
-  left: 12px;
-  z-index: 1000;
-  background: rgba(255, 255, 255, 0.95); /* more solid white */
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-family: Helvetica, sans-serif; font-weight: bold;
-  font-size: 11px;
-  border: 1px solid #ddd;
-  max-width: 180px;      /* consistent two-line wrap */
-  text-align: center;
-  line-height: 1.4;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* added shadow for depth */
-  color: #333;
+        position: absolute; 
+        bottom: 12px;          
+        left: 12px;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.95); 
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-family: Helvetica, sans-serif; font-weight: bold;
+        font-size: 11px;
+        border: 1px solid #ddd;
+        max-width: 180px;      
+        text-align: center;
+        line-height: 1.4;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        color: #333;
       }
 
-  #bci-logo {
-  position: absolute; 
-  bottom: 12px;          /* same baseline as timer */
-  right: 12px;
-  z-index: 1000;
-}
+      #bci-logo {
+        position: absolute; 
+        bottom: 12px;          
+        right: 12px;
+        z-index: 1000;
+      }
 
-#bci-logo img {
-  height: 65px;          /* slightly larger for visibility */
-  width: auto;
-  opacity: 1.0;          /* full visibility */
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* subtle shadow for logo */
-}
+      #bci-logo img {
+        height: 65px;          
+        width: auto;
+        opacity: 1.0;          
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+      }
 
-/* Mobile adjustments to keep them from overlapping */
-@media (max-width: 600px) {
-  #update-timer { 
-    font-size: 9px; 
-    bottom: 10px; 
-    left: 10px; 
-    max-width: 140px; 
-    padding: 6px;
-  }
-  #bci-logo img { 
-    height: 48px; 
-  }
-  #bci-logo { 
-    bottom: 10px; 
-    right: 10px; 
-  }
-}
-      
+      /* Dashboard Container */
+      .stats-dashboard {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 8px 12px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+        min-width: 110px;
+        margin-top: 10px !important; 
+      }
+
+      /* Individual Stat Block */
+      .stat-item {
+        margin-bottom: 8px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 4px;
+      }
+      .stat-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+
+      .stat-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #666;
+        margin-top: -2px;
+      }
+
+      .stat-value {
+        font-size: 26px;
+        font-weight: 800;
+        color: #e74c3c; 
+        line-height: 1.0;
+      }
+
       @media only screen and (max-width: 768px) {
         .cbc-title { font-size: 18px; }
         .cbc-info-line { font-size: 12px; }
         .cbc-info-line a { font-size: 12px; padding: 10px 20px; }
+      }
+
+      @media (max-width: 600px) {
+        #update-timer { 
+          font-size: 9px; 
+          bottom: 10px; 
+          left: 10px; 
+          max-width: 140px; 
+          padding: 6px;
+        }
+        #bci-logo img { height: 48px; }
+        #bci-logo { bottom: 10px; right: 10px; }
+        .stats-dashboard { transform: scale(0.8); transform-origin: top left; }
       }
     "))
   )) %>%
@@ -123,21 +155,57 @@ map_shell <- leaflet(options = leafletOptions(
                 tags$div(id = "bci-logo", tags$img(src = "icons/bcilogo-framed.png")),
                 tags$div(id = "update-timer", "Calculating last update...")) %>%
   
+  # --- JAVASCRIPT LOGIC ---
   onRender(paste0("
   function(el, x) {
     var map = this;
-    var prompt = document.getElementById('location-prompt');
     
-    if (prompt) {
-        prompt.querySelector('.close-x').onclick = function() {
-            prompt.style.display = 'none';
-        };
-    }
+    // 1. ADD ZOOM CONTROL (Top-Right)
+    L.control.zoom({ position: 'topright' }).addTo(map);
 
-// --- 2. GITHUB TIMESTAMP TIMER LOGIC ---
-    // Fetching from the raw GitHub URL
+    // 2. RECENTER BUTTON (Top-Right)
+    var recenter = L.control({position: 'topright'});
+    recenter.onAdd = function(map) {
+      var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+      div.innerHTML = '<a href=\"#\" title=\"Reset View\" style=\"background-color: white; width: 30px; height: 30px; line-height: 30px; text-align: center; display: block; cursor: pointer; color: black; font-size: 22px; font-weight: bold; text-decoration: none;\">&#8962;</a>';
+      div.onclick = function(e) {
+        L.DomEvent.stopPropagation(e);
+        L.DomEvent.preventDefault(e);
+        map.setView([22.5937, 78.9629], 5);
+      };
+      return div;
+    };
+    recenter.addTo(map);
+
+    // 3. DASHBOARD CONTROL
+    var dashboard = L.control({position: 'topleft'});
+    dashboard.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'stats-dashboard');
+      div.innerHTML = 
+        '<div class=\"stat-item\">' +
+          '<div class=\"stat-value\" id=\"dash-events\">--</div>' +
+          '<div class=\"stat-label\">Events</div>' +
+        '</div>' +
+        '<div class=\"stat-item\">' +
+          '<div class=\"stat-value\" id=\"dash-campuses\">--</div>' +
+          '<div class=\"stat-label\">Campuses</div>' +
+        '</div>' +
+        '<div class=\"stat-item\">' +
+          '<div class=\"stat-value\" id=\"dash-states\">-- / 37</div>' +
+          '<div class=\"stat-label\">States / UTs</div>' +
+        '</div>';
+      return div;
+    };
+    dashboard.addTo(map);
+
+    // 4. FETCH DASHBOARD DATA
+    var baseUrl = 'https://raw.githubusercontent.com/birdcountindia/cbc-map/main/';
+    fetch(baseUrl + 'no_of_events.txt').then(r => r.text()).then(t => { document.getElementById('dash-events').innerText = t.trim(); });
+    fetch(baseUrl + 'no_of_campuses.txt').then(r => r.text()).then(t => { document.getElementById('dash-campuses').innerText = t.trim(); });
+    fetch(baseUrl + 'no_of_states.txt').then(r => r.text()).then(t => { document.getElementById('dash-states').innerText = t.trim() + ' / 37'; });
+
+    // 5. GITHUB TIMESTAMP LOGIC
     var timestampUrl = 'https://raw.githubusercontent.com/birdcountindia/cbc-map/main/last_update.txt';
-    
     fetch(timestampUrl)
       .then(response => response.text())
       .then(timestampStr => {
@@ -147,96 +215,111 @@ map_shell <- leaflet(options = leafletOptions(
         function updateCounter() {
           const now = new Date();
           const diffMs = now - lastUpdate;
+          if (isNaN(diffMs)) { timerElement.innerHTML = 'Status: Online'; return; }
           
-          if (isNaN(diffMs)) {
-            timerElement.innerHTML = 'Status: Online';
-            return;
-          }
-
           const diffHrs = Math.floor(diffMs / 3600000);
           const diffMins = Math.floor((diffMs % 3600000) / 60000);
           
-          // MODIFIED: Check if hours > 0 before deciding what to display
           if (diffHrs > 0) {
              timerElement.innerHTML = \"This map was last updated \" + diffHrs + \" hours and \" + diffMins + \" minutes ago.\";
           } else {
              timerElement.innerHTML = \"This map was last updated \" + diffMins + \" minutes ago.\";
           }
           
-          // Visual warning if the automation has stalled (older than 2 hours)
           if (diffHrs >= 2) { 
-            timerElement.style.color = '#e74c3c'; 
-            timerElement.style.fontWeight = 'bold';
+            timerElement.style.color = '#e74c3c'; timerElement.style.fontWeight = 'bold';
           } else {
-            timerElement.style.color = '#555';
-            timerElement.style.fontWeight = 'normal';
+            timerElement.style.color = '#555'; timerElement.style.fontWeight = 'normal';
           }
         }
-
         updateCounter();
-        setInterval(updateCounter, 60000); // Update every minute
-      })
-      .catch(err => {
-        console.error('Timer fetch failed:', err);
-        document.getElementById('update-timer').innerHTML = 'Status: Live';
+        setInterval(updateCounter, 60000);
       });
-      
-// --- Fail-Safe Responsive Square Logic ---
-    var isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || (window.innerWidth <= 768);
+
+    // 6. RESPONSIVE SQUARE LOGIC (MOBILE + DESKTOP)
+    // Removed the !isMobile check to allow this on all devices
     var redSquare = null; 
-    if (!isMobile) {
-        var sizeUrl = 'https://raw.githubusercontent.com/birdcountindia/cbc-map/main/square_size.txt';
-        fetch(sizeUrl)
-            .then(response => response.text())
-            .then(sizeStr => {
-                var size = parseFloat(sizeStr.trim());
-        var center = map.getCenter();
-        var squareBounds = [
-          [center.lat - size/2, center.lng - size/2],
-          [center.lat + size/2, center.lng + size/2]
-        ];
+    var sizeUrl = 'https://raw.githubusercontent.com/birdcountindia/cbc-map/main/square_size.txt';
+    
+    fetch(sizeUrl)
+        .then(response => response.text())
+        .then(sizeStr => {
+            var size = parseFloat(sizeStr.trim()) || 2.25; // Default if fetch fails
+            var center = map.getCenter();
+            var squareBounds = [
+              [center.lat - size/2, center.lng - size/2],
+              [center.lat + size/2, center.lng + size/2]
+            ];
 
-        // Create the square only for desktop users
-        redSquare = L.rectangle(squareBounds, {
-          color: 'red', weight: 2, fillOpacity: 0.1, interactive: true
-        }).addTo(map);
+            redSquare = L.rectangle(squareBounds, {
+              color: 'red', weight: 2, fillOpacity: 0.1, interactive: true
+            }).addTo(map);
 
-        var isDragging = false;
-        var lastPos;
+            var isDragging = false;
+            var lastPos;
 
-        function onStart(e) {
-          isDragging = true;
-          lastPos = map.mouseEventToLatLng(e.originalEvent || e);
-          map.dragging.disable();
-          L.DomEvent.stopPropagation(e);
-        }
+            // --- START DRAG ---
+            function onStart(e) {
+              isDragging = true;
+              // Handle both Mouse and Touch events
+              var evt = (e.originalEvent && e.originalEvent.touches) ? e.originalEvent.touches[0] : (e.originalEvent || e);
+              
+              // Leaflet's e.latlng is best if available (mouse/tap on object)
+              if (e.latlng) {
+                 lastPos = e.latlng;
+              } else {
+                 lastPos = map.mouseEventToLatLng(evt);
+              }
+              
+              map.dragging.disable(); // Stop map from panning
+              L.DomEvent.stopPropagation(e);
+            }
 
-        function onMove(e) {
-          if (!isDragging || !redSquare) return;
-          var currentLatLng = map.mouseEventToLatLng(e);
-          var deltaLat = currentLatLng.lat - lastPos.lat;
-          var deltaLng = currentLatLng.lng - lastPos.lng;
-          var b = redSquare.getBounds();
-          
-          redSquare.setBounds([
-            [b.getSouth() + deltaLat, b.getWest() + deltaLng],
-            [b.getNorth() + deltaLat, b.getEast() + deltaLng]
-          ]);
-          lastPos = currentLatLng;
-        }
+            // --- MOVE DRAG ---
+            function onMove(e) {
+              if (!isDragging || !redSquare) return;
+              
+              // Normalize event (Mouse vs Touch)
+              var evt;
+              if (e.touches && e.touches.length > 0) {
+                 evt = e.touches[0];
+                 // Prevent scrolling on mobile while dragging square
+                 if (e.preventDefault) e.preventDefault(); 
+              } else {
+                 evt = e;
+              }
 
-        function onEnd() {
-          if (!isDragging) return;
-          isDragging = false;
-          map.dragging.enable();
-        }
+              var currentLatLng = map.mouseEventToLatLng(evt);
+              var deltaLat = currentLatLng.lat - lastPos.lat;
+              var deltaLng = currentLatLng.lng - lastPos.lng;
+              
+              var b = redSquare.getBounds();
+              redSquare.setBounds([
+                [b.getSouth() + deltaLat, b.getWest() + deltaLng],
+                [b.getNorth() + deltaLat, b.getEast() + deltaLng]
+              ]);
+              lastPos = currentLatLng;
+            }
 
-        redSquare.on('mousedown', onStart);
-        window.addEventListener('mousemove', onMove);
-        window.addEventListener('mouseup', onEnd);
-    })
-    }
-    // Load Data
+            // --- END DRAG ---
+            function onEnd() {
+              if (!isDragging) return;
+              isDragging = false;
+              map.dragging.enable(); // Re-enable map panning
+            }
+
+            // Add Listeners for Mouse
+            redSquare.on('mousedown', onStart);
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('mouseup', onEnd);
+
+            // Add Listeners for Touch (Mobile)
+            redSquare.on('touchstart', onStart);
+            window.addEventListener('touchmove', onMove, {passive: false}); // passive:false allows preventDefault
+            window.addEventListener('touchend', onEnd);
+        });
+
+    // 7. LOAD CAMPUS DATA
     var dataUrl = 'https://raw.githubusercontent.com/birdcountindia/cbc-map/main/campuses.json';
     fetch(dataUrl)
       .then(response => response.json())
@@ -266,6 +349,14 @@ map_shell <- leaflet(options = leafletOptions(
           }
         }).addTo(map);
 
+        // 8. LOCATION LOGIC
+        var prompt = document.getElementById('location-prompt');
+        if (prompt) {
+             prompt.querySelector('.close-x').onclick = function() {
+                 prompt.style.display = 'none';
+             };
+        }
+        
         map.locate({setView: false, enableHighAccuracy: true, timeout: 10000});
         map.on('locationfound', function(e) {
           if (prompt) prompt.style.display = 'none';
