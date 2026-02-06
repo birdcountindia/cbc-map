@@ -367,11 +367,11 @@ map_shell <- leaflet(options = leafletOptions(
           var dists = allMarkers.map(m => ({ m: m, d: e.latlng.distanceTo(m.getLatLng()) }));
           dists.sort((a, b) => a.d - b.d);
           var bounds = L.latLngBounds().extend(e.latlng);
-          for (var i = 0; i < Math.min(3, dists.length); i++) bounds.extend(dists[i].m.getLatLng());
+          for (var i = 0; i < Math.min(5, dists.length); i++) bounds.extend(dists[i].m.getLatLng());
           var isMobile = window.innerWidth < 600;
           map.fitBounds(bounds, {
             padding: isMobile ? [30, 30] : [50, 50], 
-            maxZoom: isMobile ? 14 : 12 
+            maxZoom: isMobile ? 13 : 11 
           });
           L.circleMarker(e.latlng, {radius: 8, fillColor: '#ff0000', color: '#fff', weight: 2}).addTo(map);
         });
