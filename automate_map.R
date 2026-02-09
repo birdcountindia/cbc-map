@@ -45,7 +45,7 @@ repeat {
 }
 
 
-# Square size -------------------------------------------------------------
-# sq_size <- "3.6"
+# Square size -----------------------------------------------------------
+# sq_size <- "2.7"
 # writeLines(as.character(sq_size), "square_size.txt")
 
