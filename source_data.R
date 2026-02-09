@@ -11,7 +11,7 @@ library(jsonlite)
 update_map_data <- function() {
 
 data<- read_sheet("https://docs.google.com/spreadsheets/d/1xNm-JheLupRkwpOTLcpit0RiTu6cmX-Y4We7S8vZAWk/", 
-                       sheet = 1, col_names = TRUE)
+                       sheet = 1,range = "A:K", col_names = TRUE)
 
 no_of_events <- NROW(data)
 writeLines(as.character(no_of_events), "no_of_events.txt")
