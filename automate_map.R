@@ -1,7 +1,7 @@
 library(googlesheets4)
 library(dplyr)
 
-UPDATE_INTERVAL <- 1500 # 30 minutes in seconds
+UPDATE_INTERVAL <- 600 # 10 minutes in seconds
 TARGET_EMAIL <- "alenalex@ncf-india.org" # Your preferred auth account
 
 run_sync_cycle <- function() {
