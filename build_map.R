@@ -227,6 +227,16 @@ map_shell <- leaflet(options = leafletOptions(
   addPolygons(data = in_simple, fill = FALSE, color = "#333333", weight = 1.5, opacity = 1.0, options = pathOptions(interactive = FALSE)) %>%
   prependContent(tags$head(
     tags$meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"),
+    
+    # --- NEW: WHATSAPP / SOCIAL MEDIA PREVIEW TAGS ---
+    tags$meta(property="og:title", content="Campus Bird Count 2025 Map"),
+    tags$meta(property="og:description", content="Explore registered campuses and events for the Campus Bird Count 2025."),
+    tags$meta(property="og:image", content="https://birdcountindia.github.io/cbc-map/thumbnail.png"), 
+    tags$meta(property="og:image:width", content="1200"),
+    tags$meta(property="og:image:height", content="630"),
+    tags$meta(property="og:url", content="https://birdcountindia.github.io/cbc-map/"),
+    tags$meta(property="og:type", content="website"),
+    
     tags$style(HTML("
       body, html, #htmlwidget_container, .leaflet { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; }
       .close-x { position: absolute; top: 4px; right: 8px; font-size: 20px; color: #999; cursor: pointer; line-height: 1; }
